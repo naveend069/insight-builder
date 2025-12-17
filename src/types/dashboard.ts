@@ -7,7 +7,7 @@ export type WidgetType =
   | 'table' 
   | 'kpi';
 
-export type OrderStatus = 'pending' | 'in-progress' | 'completed';
+export type OrderStatus = 'Pending' | 'In Progress' | 'Completed';
 
 export type DateFilterOption = 
   | 'all-time' 
@@ -30,7 +30,7 @@ export interface CustomerOrder {
   city: string;
   state: string;
   postalCode: string;
-  country: 'US' | 'Canada' | 'Australia' | 'Singapore' | 'Hong Kong';
+  country: 'United States' | 'Canada' | 'Australia' | 'Singapore' | 'Hong Kong';
   product: string;
   quantity: number;
   unitPrice: number;
@@ -81,6 +81,7 @@ export interface TableWidgetConfig extends BaseWidgetConfig {
   sortDirection: 'asc' | 'desc';
   pageSize: 5 | 10 | 15;
   filters: TableFilter[];
+  enableFilters: boolean;
   fontSize: number;
   headerBgColor: string;
 }
@@ -99,6 +100,7 @@ export type WidgetConfig =
 
 export interface Dashboard {
   id: string;
+  userId?: string;
   name: string;
   widgets: WidgetConfig[];
   dateFilter: DateFilterOption;
@@ -118,33 +120,30 @@ export const WIDGET_DEFAULTS: Record<WidgetType, Partial<WidgetConfig>> = {
   'pie-chart': { width: 4, height: 4, showLegend: true, chartColor: '#54bd95' },
   'area-chart': { width: 5, height: 5, chartColor: '#54bd95', showDataLabels: true },
   'scatter-plot': { width: 5, height: 5, chartColor: '#54bd95', showDataLabels: false },
-  'table': { width: 6, height: 4, pageSize: 10, fontSize: 14, headerBgColor: '#54bd95', columns: ['firstName', 'lastName', 'product', 'totalAmount', 'status'], filters: [], sortDirection: 'asc' },
+  'table': { width: 6, height: 4, pageSize: 10, fontSize: 14, headerBgColor: '#54bd95', columns: ['firstName', 'lastName', 'product', 'totalAmount', 'status'], filters: [], sortDirection: 'asc', enableFilters: false },
   'kpi': { width: 3, height: 2, aggregation: 'sum', dataFormat: 'number', decimalPrecision: 0 },
 };
 
+// Updated products per requirements
 export const PRODUCTS = [
-  'Laptop Pro 15"',
-  'Wireless Mouse',
-  'Mechanical Keyboard',
-  'USB-C Hub',
-  '4K Monitor 27"',
-  'Webcam HD',
-  'Noise-Canceling Headphones',
-  'Portable SSD 1TB',
-  'Tablet Stand',
-  'Wireless Charger',
+  'Fiber Internet 300 Mbps',
+  '5G Unlimited Mobile Plan',
+  'Fiber Internet 1 Gbps',
+  'Business Internet 500 Mbps',
+  'VoIP Corporate Package',
 ];
 
+// Updated users per requirements
 export const USERS = [
-  'John Smith',
-  'Sarah Johnson',
-  'Michael Chen',
-  'Emily Davis',
-  'Robert Wilson',
+  'Michael Harris',
+  'Ryan Cooper',
+  'Olivia Carter',
+  'Lucas Martin',
 ];
 
+// Updated countries per requirements
 export const COUNTRIES = [
-  'US',
+  'United States',
   'Canada',
   'Australia',
   'Singapore',

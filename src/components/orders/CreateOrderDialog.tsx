@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDashboardStore } from '@/store/dashboardStore';
-import { CustomerOrder, PRODUCTS, USERS, COUNTRIES } from '@/types/dashboard';
+import { CustomerOrder, PRODUCTS, USERS, COUNTRIES, OrderStatus } from '@/types/dashboard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -39,17 +39,21 @@ const initialFormData: FormData = {
   city: '',
   state: '',
   postalCode: '',
-  country: 'US',
+  country: 'United States',
   product: PRODUCTS[0],
   quantity: 1,
   unitPrice: 0,
-  status: 'pending',
+  status: 'Pending',
   createdBy: USERS[0],
 };
 
 export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialogProps) => {
   const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState<FormData>(order || initialFormData);
+  const [formData, setFormData] = useState<FormData>(order ? {
+    ...order,
+    status: order.status as OrderStatus,
+    country: order.country as typeof COUNTRIES[number],
+  } : initialFormData);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
   
   const { addOrder, updateOrder } = useDashboardStore();
@@ -100,7 +104,11 @@ export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialog
 
   const handleClose = () => {
     setOpen(false);
-    setFormData(order || initialFormData);
+    setFormData(order ? {
+      ...order,
+      status: order.status as OrderStatus,
+      country: order.country as typeof COUNTRIES[number],
+    } : initialFormData);
     setErrors({});
     onClose?.();
   };
@@ -154,7 +162,7 @@ export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialog
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="email">Email ID *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -166,7 +174,7 @@ export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialog
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone *</Label>
+                <Label htmlFor="phone">Phone Number *</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
@@ -305,15 +313,15 @@ export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialog
                 <Label>Status *</Label>
                 <Select
                   value={formData.status}
-                  onValueChange={(value: 'pending' | 'in-progress' | 'completed') => setFormData({ ...formData, status: value })}
+                  onValueChange={(value: OrderStatus) => setFormData({ ...formData, status: value })}
                 >
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="pending">Pending</SelectItem>
-                    <SelectItem value="in-progress">In Progress</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="In Progress">In Progress</SelectItem>
+                    <SelectItem value="Completed">Completed</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
