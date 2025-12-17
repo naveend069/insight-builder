@@ -32,7 +32,8 @@ import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 export const OrdersTable = () => {
-  const { orders, deleteOrder } = useDashboardStore();
+  const { getOrders, deleteOrder } = useDashboardStore();
+  const orders = getOrders();
   const [editingOrder, setEditingOrder] = useState<CustomerOrder | null>(null);
   const [deletingOrderId, setDeletingOrderId] = useState<string | null>(null);
   const { toast } = useToast();
@@ -86,9 +87,9 @@ export const OrdersTable = () => {
                 <TableCell>
                   <span className={cn(
                     "px-2 py-1 rounded-full text-xs font-medium",
-                    order.status === 'pending' && "bg-yellow-100 text-yellow-800",
-                    order.status === 'in-progress' && "bg-blue-100 text-blue-800",
-                    order.status === 'completed' && "bg-emerald-100 text-emerald-800"
+                    order.status === 'Pending' && "bg-yellow-100 text-yellow-800",
+                    order.status === 'In Progress' && "bg-blue-100 text-blue-800",
+                    order.status === 'Completed' && "bg-emerald-100 text-emerald-800"
                   )}>
                     {order.status}
                   </span>

@@ -1,14 +1,24 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, 
   ShoppingCart, 
-  Menu,
   X,
-  ChevronRight
+  ChevronRight,
+  LogOut,
+  User
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const NAV_ITEMS = [
   { path: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -17,7 +27,14 @@ const NAV_ITEMS = [
 
 export const AppSidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
+  const { user, signOut } = useAuth();
+
+  const handleLogout = () => {
+    signOut();
+    navigate('/auth');
+  };
 
   return (
     <aside className={cn(
@@ -68,9 +85,45 @@ export const AppSidebar = () => {
         })}
       </nav>
 
+      {/* User Section */}
+      <div className="p-3 border-t border-border">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className={cn(
+                "w-full justify-start gap-3 px-3 py-2.5",
+                collapsed && "justify-center px-0"
+              )}
+            >
+              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <User className="h-4 w-4 text-primary" />
+              </div>
+              {!collapsed && (
+                <div className="flex-1 text-left min-w-0">
+                  <p className="text-sm font-medium truncate">{user?.email}</p>
+                </div>
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="text-muted-foreground">
+              {user?.email}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout} className="text-destructive">
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
       {/* Footer */}
       {!collapsed && (
-        <div className="p-4 border-t border-border">
+        <div className="px-4 pb-4">
           <p className="text-xs text-muted-foreground">
             Dashboard POC v1.0
           </p>

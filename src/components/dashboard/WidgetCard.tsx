@@ -1,4 +1,4 @@
-import { WidgetConfig } from '@/types/dashboard';
+import { WidgetConfig, ChartWidgetConfig, PieChartWidgetConfig } from '@/types/dashboard';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { WidgetIcon, WIDGET_LABELS } from './WidgetIcon';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,9 @@ import { cn } from '@/lib/utils';
 import { KPIWidget } from './widgets/KPIWidget';
 import { ChartWidget } from './widgets/ChartWidget';
 import { TableWidget } from './widgets/TableWidget';
+import { AreaChartWidget } from './widgets/AreaChartWidget';
+import { ScatterPlotWidget } from './widgets/ScatterPlotWidget';
+import { PieChartWidget } from './widgets/PieChartWidget';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,11 +48,13 @@ export const WidgetCard = ({ widget, isSelected, onClick }: WidgetCardProps) => 
         return <KPIWidget config={widget as any} />;
       case 'bar-chart':
       case 'line-chart':
+        return <ChartWidget config={widget as ChartWidgetConfig} />;
       case 'area-chart':
+        return <AreaChartWidget config={widget as ChartWidgetConfig} />;
       case 'scatter-plot':
-        return <ChartWidget config={widget as any} />;
+        return <ScatterPlotWidget config={widget as ChartWidgetConfig} />;
       case 'pie-chart':
-        return <ChartWidget config={widget as any} />;
+        return <PieChartWidget config={widget as PieChartWidgetConfig} />;
       case 'table':
         return <TableWidget config={widget as any} />;
       default:
