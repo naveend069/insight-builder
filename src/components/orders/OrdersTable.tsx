@@ -126,13 +126,11 @@ export const OrdersTable = () => {
       </div>
 
       {/* Edit Dialog */}
-      {editingOrder && (
-        <CreateOrderDialog
-          order={editingOrder}
-          onClose={() => setEditingOrder(null)}
-          trigger={<span className="hidden" />}
-        />
-      )}
+      <CreateOrderDialog
+        order={editingOrder}
+        open={!!editingOrder}
+        onClose={() => setEditingOrder(null)}
+      />
 
       {/* Delete Confirmation */}
       <AlertDialog open={!!deletingOrderId} onOpenChange={() => setDeletingOrderId(null)}>

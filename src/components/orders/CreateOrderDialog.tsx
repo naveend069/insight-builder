@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { CustomerOrder, PRODUCTS, USERS, COUNTRIES, OrderStatus } from '@/types/dashboard';
 import { Button } from '@/components/ui/button';
@@ -23,7 +23,8 @@ import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface CreateOrderDialogProps {
-  order?: CustomerOrder;
+  order?: CustomerOrder | null;
+  open?: boolean;
   onClose?: () => void;
   trigger?: React.ReactNode;
 }
@@ -47,8 +48,12 @@ const initialFormData: FormData = {
   createdBy: USERS[0],
 };
 
-export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialogProps) => {
-  const [open, setOpen] = useState(false);
+export const CreateOrderDialog = ({ order, open: controlledOpen, onClose, trigger }: CreateOrderDialogProps) => {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const isControlled = controlledOpen !== undefined;
+  const open = isControlled ? controlledOpen : internalOpen;
+  const setOpen = isControlled ? (value: boolean) => { if (!value) onClose?.(); } : setInternalOpen;
+  
   const [formData, setFormData] = useState<FormData>(order ? {
     ...order,
     status: order.status as OrderStatus,
@@ -60,6 +65,20 @@ export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialog
   const { toast } = useToast();
 
   const isEditing = !!order;
+
+  // Sync form data when order changes (for edit mode)
+  useEffect(() => {
+    if (order) {
+      setFormData({
+        ...order,
+        status: order.status as OrderStatus,
+        country: order.country as typeof COUNTRIES[number],
+      });
+    } else {
+      setFormData(initialFormData);
+    }
+    setErrors({});
+  }, [order]);
 
   const validateForm = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
@@ -96,19 +115,14 @@ export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialog
       });
     }
 
-    setOpen(false);
+    if (!isControlled) setInternalOpen(false);
     setFormData(initialFormData);
     setErrors({});
     onClose?.();
   };
 
   const handleClose = () => {
-    setOpen(false);
-    setFormData(order ? {
-      ...order,
-      status: order.status as OrderStatus,
-      country: order.country as typeof COUNTRIES[number],
-    } : initialFormData);
+    if (!isControlled) setInternalOpen(false);
     setErrors({});
     onClose?.();
   };
@@ -117,8 +131,12 @@ export const CreateOrderDialog = ({ order, onClose, trigger }: CreateOrderDialog
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
-      setOpen(isOpen);
-      if (!isOpen) handleClose();
+      if (isControlled) {
+        if (!isOpen) onClose?.();
+      } else {
+        setInternalOpen(isOpen);
+        if (!isOpen) handleClose();
+      }
     }}>
       <DialogTrigger asChild>
         {trigger || (

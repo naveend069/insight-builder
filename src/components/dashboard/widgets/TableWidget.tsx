@@ -45,26 +45,30 @@ export const TableWidget = ({ config }: TableWidgetProps) => {
   const filteredOrders = useMemo(() => {
     let result = [...orders];
 
-    // Apply filters
-    config.filters?.forEach((filter) => {
-      result = result.filter((order) => {
-        const value = String(order[filter.field] || '').toLowerCase();
-        const filterValue = filter.value.toLowerCase();
+    // Apply filters only if enableFilters is true
+    if (config.enableFilters && config.filters?.length) {
+      config.filters.forEach((filter) => {
+        if (!filter.field || !filter.value) return;
+        
+        result = result.filter((order) => {
+          const value = String(order[filter.field] || '').toLowerCase();
+          const filterValue = filter.value.toLowerCase();
 
-        switch (filter.operator) {
-          case 'equals':
-            return value === filterValue;
-          case 'contains':
-            return value.includes(filterValue);
-          case 'greater':
-            return Number(order[filter.field]) > Number(filter.value);
-          case 'less':
-            return Number(order[filter.field]) < Number(filter.value);
-          default:
-            return true;
-        }
+          switch (filter.operator) {
+            case 'equals':
+              return value === filterValue;
+            case 'contains':
+              return value.includes(filterValue);
+            case 'greater':
+              return Number(order[filter.field]) > Number(filter.value);
+            case 'less':
+              return Number(order[filter.field]) < Number(filter.value);
+            default:
+              return true;
+          }
+        });
       });
-    });
+    }
 
     // Apply sorting
     if (config.sortField) {
@@ -85,7 +89,7 @@ export const TableWidget = ({ config }: TableWidgetProps) => {
     }
 
     return result;
-  }, [orders, config.filters, config.sortField, config.sortDirection]);
+  }, [orders, config.enableFilters, config.filters, config.sortField, config.sortDirection]);
 
   const totalPages = Math.ceil(filteredOrders.length / config.pageSize);
   const paginatedOrders = filteredOrders.slice(
@@ -102,9 +106,9 @@ export const TableWidget = ({ config }: TableWidgetProps) => {
       return (
         <span className={cn(
           "px-2 py-0.5 rounded-full text-xs font-medium",
-          value === 'pending' && "bg-yellow-100 text-yellow-800",
-          value === 'in-progress' && "bg-blue-100 text-blue-800",
-          value === 'completed' && "bg-emerald-100 text-emerald-800"
+          value === 'Pending' && "bg-yellow-100 text-yellow-800",
+          value === 'In Progress' && "bg-blue-100 text-blue-800",
+          value === 'Completed' && "bg-emerald-100 text-emerald-800"
         )}>
           {String(value)}
         </span>
