@@ -79,17 +79,16 @@ export const ConfigurationPanel = () => {
             <Input value={WIDGET_LABELS[widget.type]} disabled className="bg-muted" />
           </div>
 
-          {widget.type === 'kpi' && (
-            <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
-              <Input
-                id="description"
-                value={(widget as any).description || ''}
-                onChange={(e) => handleUpdate({ description: e.target.value } as any)}
-                placeholder="Optional description"
-              />
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <textarea
+              id="description"
+              value={widget.description || ''}
+              onChange={(e) => handleUpdate({ description: e.target.value })}
+              placeholder="Optional description"
+              className="w-full min-h-[60px] px-3 py-2 text-sm rounded-md border border-input bg-background resize-none focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
         </div>
 
         {/* Size Settings */}
@@ -299,6 +298,27 @@ export const ConfigurationPanel = () => {
                 onCheckedChange={(checked) => handleUpdate({ showLegend: checked } as any)}
               />
             </div>
+
+            <div className="space-y-2">
+              <Label className="flex items-center gap-2">
+                <Palette className="h-4 w-4" />
+                Chart Color
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  type="color"
+                  value={(widget as any).chartColor || '#54bd95'}
+                  onChange={(e) => handleUpdate({ chartColor: e.target.value } as any)}
+                  className="w-12 h-10 p-1 cursor-pointer"
+                />
+                <Input
+                  value={(widget as any).chartColor || '#54bd95'}
+                  onChange={(e) => handleUpdate({ chartColor: e.target.value } as any)}
+                  placeholder="#54bd95"
+                  className="flex-1"
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -413,6 +433,106 @@ export const ConfigurationPanel = () => {
                   className="flex-1"
                 />
               </div>
+            </div>
+
+            {/* Apply Filter Section */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="enableFilters">Apply Filter</Label>
+                <Switch
+                  id="enableFilters"
+                  checked={(widget as any).enableFilters ?? false}
+                  onCheckedChange={(checked) => handleUpdate({ enableFilters: checked } as any)}
+                />
+              </div>
+
+              {(widget as any).enableFilters && (
+                <div className="space-y-3 p-3 border rounded-md bg-muted/30">
+                  <p className="text-xs text-muted-foreground">Configure filters for table data</p>
+                  
+                  {((widget as any).filters || []).map((filter: any, index: number) => (
+                    <div key={index} className="space-y-2 p-2 border rounded bg-background">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium">Filter {index + 1}</span>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-destructive"
+                          onClick={() => {
+                            const filters = [...((widget as any).filters || [])];
+                            filters.splice(index, 1);
+                            handleUpdate({ filters } as any);
+                          }}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </div>
+                      
+                      <Select
+                        value={filter.field || ''}
+                        onValueChange={(value) => {
+                          const filters = [...((widget as any).filters || [])];
+                          filters[index] = { ...filters[index], field: value };
+                          handleUpdate({ filters } as any);
+                        }}
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue placeholder="Select field" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ORDER_FIELDS.map((field) => (
+                            <SelectItem key={field.key} value={field.key}>
+                              {field.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <Select
+                        value={filter.operator || 'equals'}
+                        onValueChange={(value) => {
+                          const filters = [...((widget as any).filters || [])];
+                          filters[index] = { ...filters[index], operator: value };
+                          handleUpdate({ filters } as any);
+                        }}
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="equals">Equals</SelectItem>
+                          <SelectItem value="contains">Contains</SelectItem>
+                          <SelectItem value="greater">Greater than</SelectItem>
+                          <SelectItem value="less">Less than</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Input
+                        value={filter.value || ''}
+                        onChange={(e) => {
+                          const filters = [...((widget as any).filters || [])];
+                          filters[index] = { ...filters[index], value: e.target.value };
+                          handleUpdate({ filters } as any);
+                        }}
+                        placeholder="Filter value"
+                        className="h-8 text-xs"
+                      />
+                    </div>
+                  ))}
+
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      const filters = [...((widget as any).filters || []), { field: '', operator: 'equals', value: '' }];
+                      handleUpdate({ filters } as any);
+                    }}
+                  >
+                    + Add Filter
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
         )}
