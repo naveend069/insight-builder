@@ -120,8 +120,8 @@ export const WIDGET_DEFAULTS: Record<WidgetType, Partial<WidgetConfig>> = {
   'pie-chart': { width: 4, height: 4, showLegend: true, chartColor: '#54bd95' },
   'area-chart': { width: 5, height: 5, chartColor: '#54bd95', showDataLabels: true },
   'scatter-plot': { width: 5, height: 5, chartColor: '#54bd95', showDataLabels: false },
-  'table': { width: 6, height: 4, pageSize: 10, fontSize: 14, headerBgColor: '#54bd95', columns: ['firstName', 'lastName', 'product', 'totalAmount', 'status'], filters: [], sortDirection: 'asc', enableFilters: false },
-  'kpi': { width: 3, height: 2, aggregation: 'sum', dataFormat: 'number', decimalPrecision: 0 },
+  'table': { width: 4, height: 4, pageSize: 10, fontSize: 14, headerBgColor: '#54bd95', columns: ['firstName', 'lastName', 'product', 'totalAmount', 'status'], filters: [], sortDirection: 'asc', enableFilters: false },
+  'kpi': { width: 2, height: 2, aggregation: 'sum', dataFormat: 'number', decimalPrecision: 0 },
 };
 
 // Updated products per requirements
@@ -135,10 +135,10 @@ export const PRODUCTS = [
 
 // Updated users per requirements
 export const USERS = [
-  'Michael Harris',
-  'Ryan Cooper',
-  'Olivia Carter',
-  'Lucas Martin',
+  'Mr. Michael Harris',
+  'Mr. Ryan Cooper',
+  'Ms. Olivia Carter',
+  'Mr. Lucas Martin',
 ];
 
 // Updated countries per requirements
