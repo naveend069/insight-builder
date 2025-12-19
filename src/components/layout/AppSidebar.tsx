@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { ThemeToggle } from '@/components/ThemeToggle';
 import { 
   LayoutDashboard, 
   ShoppingCart, 
@@ -83,6 +84,11 @@ export const AppSidebar = () => {
             </Link>
           );
         })}
+        
+        {/* Theme Toggle */}
+        <div className="mt-2">
+          <ThemeToggle collapsed={collapsed} />
+        </div>
       </nav>
 
       {/* User Section */}
