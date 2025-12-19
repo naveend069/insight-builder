@@ -8,8 +8,25 @@ interface ScatterPlotWidgetProps {
 }
 
 export const ScatterPlotWidget = ({ config }: ScatterPlotWidgetProps) => {
-  const { getFilteredOrders } = useDashboardStore();
-  const orders = getFilteredOrders();
+  const orders = useDashboardStore((state) => {
+    const userOrders = state.currentUserId ? (state.userOrders[state.currentUserId] || []) : [];
+    const now = new Date();
+    return userOrders.filter((order) => {
+      const orderDate = new Date(order.createdAt);
+      switch (state.dateFilter) {
+        case 'today':
+          return orderDate.toDateString() === now.toDateString();
+        case 'last-7-days':
+          return now.getTime() - orderDate.getTime() <= 7 * 24 * 60 * 60 * 1000;
+        case 'last-30-days':
+          return now.getTime() - orderDate.getTime() <= 30 * 24 * 60 * 60 * 1000;
+        case 'last-90-days':
+          return now.getTime() - orderDate.getTime() <= 90 * 24 * 60 * 60 * 1000;
+        default:
+          return true;
+      }
+    });
+  });
 
   const chartData = useMemo(() => {
     if (!config.xAxis || !config.yAxis || orders.length === 0) return [];

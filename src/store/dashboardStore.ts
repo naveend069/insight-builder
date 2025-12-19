@@ -382,3 +382,24 @@ export const useDashboardStore = create<DashboardState>()(
 // Selector hooks for convenience
 export const useDashboards = () => useDashboardStore((state) => state.getDashboards());
 export const useOrders = () => useDashboardStore((state) => state.getOrders());
+
+// Proper reactive selector for filtered orders - use this in widgets!
+export const useFilteredOrders = () => useDashboardStore((state) => {
+  const userOrders = state.currentUserId ? (state.userOrders[state.currentUserId] || []) : [];
+  const now = new Date();
+  return userOrders.filter((order) => {
+    const orderDate = new Date(order.createdAt);
+    switch (state.dateFilter) {
+      case 'today':
+        return orderDate.toDateString() === now.toDateString();
+      case 'last-7-days':
+        return now.getTime() - orderDate.getTime() <= 7 * 24 * 60 * 60 * 1000;
+      case 'last-30-days':
+        return now.getTime() - orderDate.getTime() <= 30 * 24 * 60 * 60 * 1000;
+      case 'last-90-days':
+        return now.getTime() - orderDate.getTime() <= 90 * 24 * 60 * 60 * 1000;
+      default:
+        return true;
+    }
+  });
+});
