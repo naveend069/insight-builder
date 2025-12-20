@@ -1,3 +1,17 @@
+#### Project Setup Notes
+
+This project was initially scaffolded using **Lovable** to generate the base application structure.
+
+All functional implementations — including:
+- Authentication and user-specific dashboards
+- Dashboard configuration logic
+- Widget management (charts, tables, KPIs)
+- Customer order management
+- State management and persistence
+- UI customization (dark mode, responsiveness)
+
+**were designed, implemented, and extended manually as part of this POC.**####
+
 Halleyx Dashboard Configuration POC – 2025
 📌 Project Overview
 
