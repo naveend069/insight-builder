@@ -1,4 +1,4 @@
-#### Project Setup Notes
+#### Project Setup Notes by NAVEEN D
 
 This project was initially scaffolded using **Lovable** to generate the base application structure.
 
