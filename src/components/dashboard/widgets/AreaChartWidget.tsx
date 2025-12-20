@@ -8,12 +8,16 @@ interface AreaChartWidgetProps {
 }
 
 export const AreaChartWidget = ({ config }: AreaChartWidgetProps) => {
-  const orders = useDashboardStore((state) => {
-    const userOrders = state.currentUserId ? (state.userOrders[state.currentUserId] || []) : [];
+  const userOrders = useDashboardStore((state) => 
+    state.currentUserId ? (state.userOrders[state.currentUserId] || []) : []
+  );
+  const dateFilter = useDashboardStore((state) => state.dateFilter);
+
+  const orders = useMemo(() => {
     const now = new Date();
     return userOrders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      switch (state.dateFilter) {
+      switch (dateFilter) {
         case 'today':
           return orderDate.toDateString() === now.toDateString();
         case 'last-7-days':
@@ -26,7 +30,7 @@ export const AreaChartWidget = ({ config }: AreaChartWidgetProps) => {
           return true;
       }
     });
-  });
+  }, [userOrders, dateFilter]);
 
   const chartData = useMemo(() => {
     if (!config.xAxis || !config.yAxis || orders.length === 0) return [];

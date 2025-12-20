@@ -38,12 +38,17 @@ const COLUMN_LABELS: Record<keyof CustomerOrder, string> = {
 };
 
 export const TableWidget = ({ config }: TableWidgetProps) => {
-  const orders = useDashboardStore((state) => {
-    const userOrders = state.currentUserId ? (state.userOrders[state.currentUserId] || []) : [];
+  const userOrders = useDashboardStore((state) => 
+    state.currentUserId ? (state.userOrders[state.currentUserId] || []) : []
+  );
+  const dateFilter = useDashboardStore((state) => state.dateFilter);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const orders = useMemo(() => {
     const now = new Date();
     return userOrders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      switch (state.dateFilter) {
+      switch (dateFilter) {
         case 'today':
           return orderDate.toDateString() === now.toDateString();
         case 'last-7-days':
@@ -56,8 +61,7 @@ export const TableWidget = ({ config }: TableWidgetProps) => {
           return true;
       }
     });
-  });
-  const [currentPage, setCurrentPage] = useState(1);
+  }, [userOrders, dateFilter]);
 
   const filteredOrders = useMemo(() => {
     let result = [...orders];

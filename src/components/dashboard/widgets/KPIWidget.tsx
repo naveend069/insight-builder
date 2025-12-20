@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { KPIWidgetConfig } from '@/types/dashboard';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
@@ -8,12 +9,16 @@ interface KPIWidgetProps {
 }
 
 export const KPIWidget = ({ config }: KPIWidgetProps) => {
-  const orders = useDashboardStore((state) => {
-    const userOrders = state.currentUserId ? (state.userOrders[state.currentUserId] || []) : [];
+  const userOrders = useDashboardStore((state) => 
+    state.currentUserId ? (state.userOrders[state.currentUserId] || []) : []
+  );
+  const dateFilter = useDashboardStore((state) => state.dateFilter);
+
+  const orders = useMemo(() => {
     const now = new Date();
     return userOrders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      switch (state.dateFilter) {
+      switch (dateFilter) {
         case 'today':
           return orderDate.toDateString() === now.toDateString();
         case 'last-7-days':
@@ -26,14 +31,14 @@ export const KPIWidget = ({ config }: KPIWidgetProps) => {
           return true;
       }
     });
-  });
+  }, [userOrders, dateFilter]);
 
-  const calculateValue = () => {
+  const value = useMemo(() => {
     if (!config.metric || orders.length === 0) return 0;
 
     const values = orders.map((order) => {
-      const value = order[config.metric];
-      return typeof value === 'number' ? value : 0;
+      const val = order[config.metric];
+      return typeof val === 'number' ? val : 0;
     });
 
     switch (config.aggregation) {
@@ -46,9 +51,8 @@ export const KPIWidget = ({ config }: KPIWidgetProps) => {
       default:
         return 0;
     }
-  };
+  }, [orders, config.metric, config.aggregation]);
 
-  const value = calculateValue();
   const formattedValue = config.dataFormat === 'currency'
     ? new Intl.NumberFormat('en-US', {
         style: 'currency',
@@ -61,9 +65,11 @@ export const KPIWidget = ({ config }: KPIWidgetProps) => {
         maximumFractionDigits: config.decimalPrecision,
       }).format(value);
 
-  // Simple trend indicator (mock for demo)
-  const trend = Math.random() > 0.5 ? 'up' : Math.random() > 0.5 ? 'down' : 'neutral';
-  const trendPercent = (Math.random() * 20).toFixed(1);
+  // Simple trend indicator (mock for demo - memoized to prevent re-renders)
+  const { trend, trendPercent } = useMemo(() => ({
+    trend: Math.random() > 0.5 ? 'up' : Math.random() > 0.5 ? 'down' : 'neutral',
+    trendPercent: (Math.random() * 20).toFixed(1)
+  }), [orders.length]);
 
   return (
     <div className="h-full flex flex-col justify-center">
