@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { WidgetConfig, ChartWidgetConfig, PieChartWidgetConfig } from '@/types/dashboard';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { WidgetIcon, WIDGET_LABELS } from './WidgetIcon';
@@ -28,7 +29,7 @@ interface WidgetCardProps {
   onClick: () => void;
 }
 
-export const WidgetCard = ({ widget, isSelected, onClick }: WidgetCardProps) => {
+export const WidgetCard = forwardRef<HTMLDivElement, WidgetCardProps>(({ widget, isSelected, onClick }, ref) => {
   const { removeWidget, currentDashboardId, setSelectedWidget, isConfiguring } = useDashboardStore();
 
   const handleDelete = () => {
@@ -68,6 +69,7 @@ export const WidgetCard = ({ widget, isSelected, onClick }: WidgetCardProps) => 
 
   return (
     <div
+      ref={ref}
       onClick={onClick}
       className={cn(
         "widget-card group relative overflow-hidden animate-scale-in",
@@ -143,4 +145,6 @@ export const WidgetCard = ({ widget, isSelected, onClick }: WidgetCardProps) => 
       </div>
     </div>
   );
-};
+});
+
+WidgetCard.displayName = 'WidgetCard';
