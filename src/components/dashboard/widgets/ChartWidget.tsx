@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { ChartWidgetConfig, PieChartWidgetConfig } from '@/types/dashboard';
 import { useDashboardStore } from '@/store/dashboardStore';
 import {
@@ -27,12 +28,16 @@ interface ChartWidgetProps {
 const COLORS = ['#54bd95', '#0EA5E9', '#F59E0B', '#8B5CF6', '#EF4444', '#10B981', '#6366F1'];
 
 export const ChartWidget = ({ config }: ChartWidgetProps) => {
-  const orders = useDashboardStore((state) => {
-    const userOrders = state.currentUserId ? (state.userOrders[state.currentUserId] || []) : [];
+  const userOrders = useDashboardStore((state) => 
+    state.currentUserId ? (state.userOrders[state.currentUserId] || []) : []
+  );
+  const dateFilter = useDashboardStore((state) => state.dateFilter);
+
+  const orders = useMemo(() => {
     const now = new Date();
     return userOrders.filter((order) => {
       const orderDate = new Date(order.createdAt);
-      switch (state.dateFilter) {
+      switch (dateFilter) {
         case 'today':
           return orderDate.toDateString() === now.toDateString();
         case 'last-7-days':
@@ -45,9 +50,9 @@ export const ChartWidget = ({ config }: ChartWidgetProps) => {
           return true;
       }
     });
-  });
+  }, [userOrders, dateFilter]);
 
-  const prepareChartData = () => {
+  const data = useMemo(() => {
     if (config.type === 'pie-chart') {
       const pieConfig = config as PieChartWidgetConfig;
       if (!pieConfig.dataField) return [];
@@ -79,9 +84,7 @@ export const ChartWidget = ({ config }: ChartWidgetProps) => {
       name,
       value: values.reduce((a, b) => a + b, 0) / values.length,
     }));
-  };
-
-  const data = prepareChartData();
+  }, [orders, config]);
 
   if (data.length === 0) {
     return (
